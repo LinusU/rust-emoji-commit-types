@@ -64,11 +64,11 @@ impl CommitType {
     /// Return the description for this commit type
     pub fn description(&self) -> &'static str {
         match *self {
-            CommitType::Breaking => "Breaking change",
-            CommitType::Feature => "New functionality",
-            CommitType::Bugfix => "Bugfix",
-            CommitType::Other => "Cleanup / Performance",
-            CommitType::Meta => "Meta",
+            CommitType::Breaking => "Breaking change (SemVer: Major)",
+            CommitType::Feature => "New functionality (SemVer: Minor)",
+            CommitType::Bugfix => "Bugfix (Semver: Patch)",
+            CommitType::Other => "Cleanup / Performance (SemVer: patch)",
+            CommitType::Meta => "Meta (SemVer: No version difference)",
         }
     }
 }
@@ -162,10 +162,10 @@ mod tests {
 
     #[test]
     fn it_gives_a_description() {
-        assert_eq!(CommitType::Breaking.description(), "Breaking change");
-        assert_eq!(CommitType::Feature.description(), "New functionality");
-        assert_eq!(CommitType::Bugfix.description(), "Bugfix");
-        assert_eq!(CommitType::Other.description(), "Cleanup / Performance");
-        assert_eq!(CommitType::Meta.description(), "Meta");
+        assert_eq!(CommitType::Breaking.description(), "Breaking change (SemVer: Major)");
+        assert_eq!(CommitType::Feature.description(), "New functionality (SemVer: Minor)");
+        assert_eq!(CommitType::Bugfix.description(), "Bugfix (SemVer: Patch)");
+        assert_eq!(CommitType::Other.description(), "Cleanup / Performance (SemVer: Patch)");
+        assert_eq!(CommitType::Meta.description(), "Meta (SemVer: No version difference)");
     }
 }
