@@ -1,6 +1,27 @@
 use std::fmt;
 use std::mem;
 
+/// A semver bump level
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub enum BumpLevel {
+    Major,
+    Minor,
+    Patch,
+    None,
+}
+
+impl BumpLevel {
+    /// Return the name of this bump level
+    pub fn name(&self) -> &'static str {
+        match *self {
+            BumpLevel::Major => "Major",
+            BumpLevel::Minor => "Minor",
+            BumpLevel::Patch => "Patch",
+            BumpLevel::None => "None",
+        }
+    }
+}
+
 /// A specific commit type
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum CommitType {
@@ -61,6 +82,17 @@ impl CommitType {
         }
     }
 
+    /// Return the bump level for this commit type
+    pub fn bump_level(&self) -> BumpLevel {
+        match *self {
+            CommitType::Breaking => BumpLevel::Major,
+            CommitType::Feature => BumpLevel::Minor,
+            CommitType::Bugfix => BumpLevel::Patch,
+            CommitType::Other => BumpLevel::Patch,
+            CommitType::Meta => BumpLevel::None,
+        }
+    }
+
     /// Return the description for this commit type
     pub fn description(&self) -> &'static str {
         match *self {
@@ -109,7 +141,7 @@ impl ExactSizeIterator for CommitTypeIterator {
 
 #[cfg(test)]
 mod tests {
-    use super::CommitType;
+    use super::{CommitType, BumpLevel};
 
     #[test]
     fn it_gives_the_first_type() {
@@ -158,6 +190,23 @@ mod tests {
         assert_eq!(CommitType::Bugfix.emoji(), "🐛");
         assert_eq!(CommitType::Other.emoji(), "🔥");
         assert_eq!(CommitType::Meta.emoji(), "🌹");
+    }
+
+    #[test]
+    fn it_gives_a_bump_level() {
+        assert_eq!(CommitType::Breaking.bump_level(), BumpLevel::Major);
+        assert_eq!(CommitType::Feature.bump_level(), BumpLevel::Minor);
+        assert_eq!(CommitType::Bugfix.bump_level(), BumpLevel::Patch);
+        assert_eq!(CommitType::Other.bump_level(), BumpLevel::Patch);
+        assert_eq!(CommitType::Meta.bump_level(), BumpLevel::None);
+    }
+
+    #[test]
+    fn it_gives_a_bump_level_name() {
+        assert_eq!(CommitType::Breaking.bump_level().name(), "Major");
+        assert_eq!(CommitType::Feature.bump_level().name(), "Minor");
+        assert_eq!(CommitType::Bugfix.bump_level().name(), "Patch");
+        assert_eq!(CommitType::Meta.bump_level().name(), "None");
     }
 
     #[test]
